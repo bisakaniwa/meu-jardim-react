@@ -1,0 +1,8 @@
+.botaoCancelar {
+    margin-right: 7% !important;
+    margin-left: 3% !important;
+}
+
+.botaoCadastrar.MuiButtonBase-root {
+    background: green;
+}

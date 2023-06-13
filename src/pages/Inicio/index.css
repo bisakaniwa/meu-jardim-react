@@ -1,0 +1,9 @@
+body {
+    background-color: rgb(163, 255, 163);
+}
+
+.boas-vindas {
+    font-size: 3rem !important;
+    text-align: center;
+    width: 50%; 
+}

@@ -1,0 +1,14 @@
+.loginForm {
+    text-align: center;
+}
+
+.links {
+    text-decoration: none;
+    color: green;
+    font-weight: 500;
+}
+
+.botaoLogin.MuiButtonBase-root  {
+    margin-top: 1%;
+    background: green;
+}
