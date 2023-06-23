@@ -1,26 +1,23 @@
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Button, Grid, TextField } from '@mui/material'
 import './index.css'
-import { useNavigate } from 'react-router-dom';
-import { UserPerfil } from '../../interfaces/UserInterface';
-import { ChangeEvent } from 'react';
+import { User, UserPerfil } from '../../interfaces/UserInterface';
+import { ChangeEvent, useEffect } from 'react';
 
 type PerfilFormType = {
     setSenhaConfirmada: React.Dispatch<React.SetStateAction<string>>;
     funcaoSubmit: SubmitHandler<UserPerfil>;
     tituloBotao: string;
+    funcaoVoltar: () => void;
+    user?: User;
 }
 
-export const PerfilForm = ({ setSenhaConfirmada, funcaoSubmit, tituloBotao }: PerfilFormType) => {
-    const { register, handleSubmit } = useForm<UserPerfil>();
-    const navigate = useNavigate();
+export const PerfilForm = ({ setSenhaConfirmada, funcaoSubmit, tituloBotao, funcaoVoltar, user }: PerfilFormType) => {
+    const { register, handleSubmit } = useForm<UserPerfil>({ defaultValues: user ?? undefined });
+    const { onChange } = register("primeiroNome");
 
     const handleSenhaConfirmada = (event: ChangeEvent<HTMLInputElement>) => {
         setSenhaConfirmada(event.target.value)
-    }
-
-    const voltarHome = () => {
-        navigate("/");
     }
 
     return (
@@ -106,7 +103,7 @@ export const PerfilForm = ({ setSenhaConfirmada, funcaoSubmit, tituloBotao }: Pe
                 </Button>
 
                 <Button
-                    onClick={voltarHome}
+                    onClick={funcaoVoltar}
                     className='botaoCancelar'
                     variant='contained'
                     color='error'

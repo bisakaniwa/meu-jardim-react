@@ -1,29 +1,30 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { createBrowserRouter } from "react-router-dom"
 import { Inicio } from "./pages/Inicio"
 import { Cadastro } from "./pages/Cadastro"
 import { Home } from "./pages/Home"
 import { Perfil } from "./pages/Perfil"
 import { Editar } from "./pages/Perfil/Editar"
+import { NotFound } from "./pages/NotFound"
 
-export const Router = () => {
+export const router = createBrowserRouter([
 
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Inicio />} />
-                <Route path="/cadastro" element={<Cadastro />} />
+    { path: "/", Component: Inicio },
+    { path: "/cadastro", Component: Cadastro },
+    { path: "/home", Component: Home },
+    {
+        path: "/perfil", children: [
+            { index: true, Component: () => <Perfil /> },
+            { path: "/perfil/editar", Component: () => <Editar /> },
+            { path: "*", Component: NotFound }
+        ]
+    },
+    {
+        path: "/plantas", children: [
+            { index: true, Component: () => <></> },
+            { path: "/plantas/adicionar", Component: () => <></> },
+            { path: "*", Component: NotFound },
+        ]
+    },
+    { path: "*", Component: NotFound },
 
-                <Route path="/home" element={<Home />} />
-                <Route path="/perfil" element={<Perfil />}>
-                    <Route path="/perfil/editar" element={<Editar />} />
-                </Route>
-
-                <Route path="/plantas">
-                    <Route path="/plantas/todas" />
-                    <Route path="/plantas/adicionar" />
-                </Route>
-
-            </Routes>
-        </BrowserRouter>
-    )
-}
+]);

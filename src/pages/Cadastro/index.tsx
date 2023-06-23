@@ -6,6 +6,7 @@ import { UserPerfil } from '../../interfaces/UserInterface'
 import { cadastroService } from '../../service/cadastroPost'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { HttpStatusCode } from 'axios'
 
 export const Cadastro = () => {
     const { cadastrar } = cadastroService();
@@ -14,7 +15,8 @@ export const Cadastro = () => {
 
     const cadastrarUsuario: SubmitHandler<UserPerfil> = data => {
         if (validaSenha(data.senha)) {
-            cadastrar(data);
+            const resposta = cadastrar(data);
+        
             navigate("/");
         } else {
             alert("As senhas não são iguais!");
@@ -26,6 +28,10 @@ export const Cadastro = () => {
             return true
         }
         return false
+    }
+
+    const voltarHome = () => {
+        navigate("/");
     }
 
     return (
@@ -50,6 +56,7 @@ export const Cadastro = () => {
                     setSenhaConfirmada={setSenhaConfirmada}
                     funcaoSubmit={cadastrarUsuario}
                     tituloBotao='Cadastrar'
+                    funcaoVoltar={voltarHome}
                 />
             </CardContent>
         </Card>

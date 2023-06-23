@@ -3,7 +3,7 @@ import vovoJuju from '../../styles/user-pic/vovojuju.png'
 import { UserContext } from '../../context/UserContext/context';
 import { useContext } from 'react';
 import './index.css'
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 export const Perfil = () => {
     const { user } = useContext(UserContext);
@@ -14,7 +14,7 @@ export const Perfil = () => {
     }
 
     const handleEditar = () => {
-        navigate("/perfil/editar")
+        navigate("/perfil/editar");
     }
 
     const handleDeletar = () => {
@@ -71,6 +71,7 @@ export const Perfil = () => {
                                         > Deletar </Button>
                                     </Grid>
                                 </Grid>
+                                <Outlet />
                             </Grid>
                         </Grid>
                     </Grid>
