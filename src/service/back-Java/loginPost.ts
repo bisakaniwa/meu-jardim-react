@@ -1,6 +1,6 @@
-import { baseURL } from "../config/axios-config";
+import { baseURL } from "../../config/axios-config";
 import axios from 'axios'
-import { UserLogin } from "../interfaces/UserInterface";
+import { UserLogin } from "../../interfaces/UserInterface";
 
 export const loginService = () => ({
 

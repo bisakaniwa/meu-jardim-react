@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useContext } from "react";
 import { UserContext } from "../../context/UserContext/context";
-import { USER_VAZIO, User } from "../../interfaces/UserInterface";
+import { User } from "../../interfaces/UserInterface";
 
 type EditarDadosUsuario = {
     setPrimeiroNome: (primeiroNome: string) => void;
@@ -64,5 +64,3 @@ export const useUserContext = (): [User, EditarDadosUsuario] => {
         }
     ];
 }
-
-// export const useUserContext = () => {}

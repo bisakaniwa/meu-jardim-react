@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { baseURL } from '../config/axios-config'
-import { UserPerfil } from '../interfaces/UserInterface'
+import { baseURL } from '../../config/axios-config'
+import { UserPerfil } from '../../interfaces/UserInterface'
 
 export const perfilService = () => ({
 

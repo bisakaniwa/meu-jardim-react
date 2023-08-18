@@ -1,9 +1,10 @@
 import { Avatar, Grid, Typography } from '@mui/material';
 import './index.css';
-import { Login } from '../../components/Login';
 import welcomeCactus from '../../styles/icons/welcomeCactus.png'
+import { LoginFirebase } from '../../components/LoginFirebase';
 
 export const Inicio = () => {
+    
     return (
         <Grid container direction="row" spacing={2}>
             <Grid item xs={6}>
@@ -26,7 +27,7 @@ export const Inicio = () => {
             </Grid>
 
             <Grid item xs={6}>
-                <Login />
+                <LoginFirebase />
             </Grid>
         </Grid>
     )

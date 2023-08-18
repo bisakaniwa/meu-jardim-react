@@ -1,6 +1,6 @@
-import { UserPerfil } from "../interfaces/UserInterface";
+import { UserPerfil } from "../../interfaces/UserInterface";
 import axios from 'axios'
-import { baseURL } from "../config/axios-config";
+import { baseURL } from "../../config/axios-config";
 
 export const cadastroService = () => ({
 

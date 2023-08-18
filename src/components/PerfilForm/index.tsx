@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { Button, Grid, TextField } from '@mui/material'
 import './index.css'
 import { User, UserPerfil } from '../../interfaces/UserInterface';
-import { ChangeEvent, useEffect } from 'react';
+import { ChangeEvent } from 'react';
 
 type PerfilFormType = {
     setSenhaConfirmada: React.Dispatch<React.SetStateAction<string>>;

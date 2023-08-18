@@ -5,7 +5,7 @@ import succulent from '../../../styles/icons/succulent.png'
 import { UserPerfil } from "../../../interfaces/UserInterface";
 import { SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom';
-import { perfilService } from '../../../service/perfilService';
+import { perfilService } from '../../../service/back-Java/perfilService';
 import { useUserContext } from '../../../hooks/useUserContext';
 
 export const Editar = () => {
@@ -39,6 +39,8 @@ export const Editar = () => {
     const voltarPerfil = () => {
         navigate("/perfil")
     }
+
+    // TODO: possibilitar a inserção de novas informações, registrar no firestore e exibir na página de perfil
 
     return (
         <Card raised sx={{ width: "80%", mt: "5%", ml: "10%" }}>

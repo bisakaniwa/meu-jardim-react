@@ -3,10 +3,9 @@ import { PerfilForm } from '../../components/PerfilForm'
 import succulent from '../../styles/icons/succulent.png'
 import { SubmitHandler } from 'react-hook-form'
 import { UserPerfil } from '../../interfaces/UserInterface'
-import { cadastroService } from '../../service/cadastroPost'
+import { cadastroService } from '../../service/back-Java/cadastroPost'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { HttpStatusCode } from 'axios'
 
 export const Cadastro = () => {
     const { cadastrar } = cadastroService();
@@ -15,7 +14,7 @@ export const Cadastro = () => {
 
     const cadastrarUsuario: SubmitHandler<UserPerfil> = data => {
         if (validaSenha(data.senha)) {
-            const resposta = cadastrar(data);
+            cadastrar(data);
         
             navigate("/");
         } else {

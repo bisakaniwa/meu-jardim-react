@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { User, UserLogin } from "../../../interfaces/UserInterface";
 import { UserContext } from '../../../context/UserContext/context';
 import { useContext, useEffect, useState } from 'react';
-import { loginService } from '../../../service/loginPost';
+import { loginService } from '../../../service/back-Java/loginPost';
 
 export const LoginForm = () => {
     const { register, handleSubmit } = useForm<UserLogin>();

@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 httpClient.ts
+firebase-config.ts
+Realtime Database.md

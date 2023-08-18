@@ -1,5 +1,5 @@
 export interface User {
-    id: number;
+    userId: number;
     primeiroNome: string;
     ultimoNome: string;
     username: string;
@@ -22,7 +22,7 @@ export interface UserLogin {
 }
 
 export const USER_VAZIO: User = {
-    id: 0,
+    userId: 0,
     primeiroNome: "",
     ultimoNome: "",
     username: "",

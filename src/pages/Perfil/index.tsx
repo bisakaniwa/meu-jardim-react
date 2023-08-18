@@ -4,9 +4,11 @@ import { UserContext } from '../../context/UserContext/context';
 import { useContext } from 'react';
 import './index.css'
 import { Outlet, useNavigate } from 'react-router-dom';
+import { firebaseAuth } from '../../config/firebase-config';
 
 export const Perfil = () => {
     const { user } = useContext(UserContext);
+    const usuario = firebaseAuth.currentUser;
     const navigate = useNavigate();
 
     const handleVoltar = () => {
@@ -21,6 +23,9 @@ export const Perfil = () => {
         alert("Tem certeza que deseja deletar sua conta?");
     }
 
+
+    // TODO: inserir mais informações advindas do auth
+    
     return (
         <Card raised sx={{ width: "85%", ml: "7%", mt: "5%" }}>
             <CardContent>
@@ -37,18 +42,20 @@ export const Perfil = () => {
                         <Typography fontSize="2.5rem" textAlign="center" mt="2%" mb="2%"> Perfil </Typography>
                         <Grid container direction="column" ml="10%">
                             <Grid item>
-                                <Typography fontSize="1.5rem" mb="2%"> Primeiro nome: {user.primeiroNome} </Typography>
+                                <Typography fontSize="1.5rem" mb="2%"> Nome de usuário: {usuario?.displayName} </Typography>
                             </Grid>
 
                             <Grid item>
-                                <Typography fontSize="1.5rem" mb="2%"> Último nome: {user.ultimoNome} </Typography>
+                                <Typography fontSize="1.5rem" mb="2%"> E-mail: {usuario?.email} </Typography>
                             </Grid>
 
                             <Grid item>
-                                <Typography fontSize="1.5rem" mb="2%"> Username: {user.username} </Typography>
+                                <Typography fontSize="1.5rem" mb="2%">
+                                    E-mail verificado: {usuario?.emailVerified ? "Sim" : "Não"}
+                                </Typography>
                             </Grid>
 
-                            <Grid item>
+                            <Grid item hidden>
                                 <Typography fontSize="1.5rem"> E-mail: {user.email} </Typography>
                             </Grid>
 
@@ -60,6 +67,7 @@ export const Perfil = () => {
                                             variant="contained"
                                             color='primary'
                                             onClick={handleEditar}
+                                            disabled
                                         > Editar </Button>
                                     </Grid>
 
@@ -68,6 +76,7 @@ export const Perfil = () => {
                                             variant="contained"
                                             color="error"
                                             onClick={handleDeletar}
+                                            disabled
                                         > Deletar </Button>
                                     </Grid>
                                 </Grid>
@@ -77,7 +86,7 @@ export const Perfil = () => {
                     </Grid>
 
                     <Grid item xs={6}>
-                        <Avatar variant="rounded" src={vovoJuju}
+                        <Avatar variant="rounded" src={usuario?.photoURL ?? vovoJuju}
                             sx={{ height: "75%", width: "45%", ml: "40%", mt: "5%", mb: "10%" }} />
                     </Grid>
                 </Grid>
