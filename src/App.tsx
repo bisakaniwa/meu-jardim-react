@@ -1,12 +1,15 @@
 import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import { PlantaProvider } from './context/PlantaContext/plantaProvider';
+import { FirebaseUserProvider } from './context/FirebaseUserContext/firebaseProvider';
 
 function App() {
   return (
-    <PlantaProvider>
-      <RouterProvider router={router} />
-    </PlantaProvider>
+    <FirebaseUserProvider>
+      <PlantaProvider>
+        <RouterProvider router={router} />
+      </PlantaProvider>
+    </FirebaseUserProvider>
   );
 }
 

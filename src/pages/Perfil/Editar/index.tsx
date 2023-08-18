@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { perfilService } from '../../../service/back-Java/perfilService';
 import { useUserContext } from '../../../hooks/useUserContext';
 
+// TODO: atualizar para firebase
+
 export const Editar = () => {
     const navigate = useNavigate();
     const { editarPerfil } = perfilService();

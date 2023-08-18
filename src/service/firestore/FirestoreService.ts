@@ -3,9 +3,10 @@ import { firebaseAuth, firestore } from "../../config/firebase-config"
 import { Planta } from "../../interfaces/PlantaInterface";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react'
+import { useFirebaseUserContext } from "../../hooks/useFirebaseUserContext";
 
 export const FirestoreService = () => {
-    const user = firebaseAuth.currentUser;
+    const { user } = useFirebaseUserContext()
     const dbRef = collection(firestore, `users/${user?.uid}/plantas`);
     const navigate = useNavigate()
     const [listaPlantas, setListaPlantas] = useState<Planta[]>([]);
@@ -43,7 +44,7 @@ export const FirestoreService = () => {
             })
     }
 
-    const verPlantas = () => {
+    const verPlantas = async () => {
         const plantaQuery = query(dbRef);
         onSnapshot(plantaQuery, (resultadoLista) => {
             const lista: Planta[] = [];
@@ -60,7 +61,7 @@ export const FirestoreService = () => {
                 })
             })
             setListaPlantas(lista);
-        }, (error) => console.log(error))
+        }, (error) => console.log(error.code))
     }
 
     const excluirPlanta = async (plantaId: string) => {
@@ -82,11 +83,11 @@ export const FirestoreService = () => {
     }
 
     const buscarFotosMinhaPlanta = async (planta: Planta) => {
-        onSnapshot(doc(firestore, `users/${user?.uid}/plantas/${planta?.plantaId}`), 
-        (perfil) => {
-            const arrayMinhaPlanta = perfil.data()?.minhaPlanta;
-            setListaFotos(arrayMinhaPlanta)
-        },
+        onSnapshot(doc(firestore, `users/${user?.uid}/plantas/${planta?.plantaId}`),
+            (perfil) => {
+                const arrayMinhaPlanta = perfil.data()?.minhaPlanta;
+                setListaFotos(arrayMinhaPlanta)
+            },
             (error) => console.log(error))
     }
 

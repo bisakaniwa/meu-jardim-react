@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import plantaPlaceholder from '../../../styles/img-placeholders/planta-placeholder1.avif'
 import { useNavigate } from 'react-router-dom'
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +10,8 @@ import { Planta } from '../../../interfaces/PlantaInterface'
 import { usePlantaContext } from '../../../hooks/usePlantaContext'
 import { BarraFiltroEPesquisa } from '../../../components/BarraFiltroEPesquisa'
 import { FirestoreService } from '../../../service/firestore/FirestoreService';
+import { onAuthStateChanged } from 'firebase/auth';
+import { firebaseAuth } from '../../../config/firebase-config';
 
 export const VerPlantas = () => {
     const navigate = useNavigate();
@@ -19,6 +21,7 @@ export const VerPlantas = () => {
     const [plantaSelecionada, setPlantaSelecionada] = useState<Planta>({} as Planta)
     const { setPlanta } = usePlantaContext();
     const [plantaPesquisada, setPlantaPesquisada] = useState<string>("")
+    const buscaPlantas = useCallback(verPlantas, [])
 
     const handleVoltar = () => {
         navigate("/home")
@@ -54,13 +57,15 @@ export const VerPlantas = () => {
     }
 
     useEffect(() => {
-        verPlantas()
+        firebaseAuth.authStateReady()
+            .then(() => verPlantas())
+            .catch((error) => console.log(error))
     }, [])
 
     // TODO: tornar os cards expansivos && criar páginas individuais para as plantas de referência
     // TODO: anexar o delete da planta de referência ao das imagens pessoais adicionadas
     // TODO: plantas preferidas: fotos pessoais, plantas de referência ou ambas?
-    
+
     return (
         <Grid container direction="column" alignContent="center" ml="5%" mt="2%">
             <Grid container direction="row">
@@ -99,7 +104,7 @@ export const VerPlantas = () => {
 
             <Grid container direction="row" ml="5%" mt="2%" columnGap="5%">
                 {listaPlantas?.map((planta, index) =>
-                    <Card raised key={index}>
+                    <Card raised key={index} sx={{ mb: "5%" }}>
                         <CardContent>
                             <Grid container direction="column" alignContent="center">
                                 <Grid item onClick={() => handlePaginaDaPlanta(planta)} sx={{ cursor: "pointer" }}>

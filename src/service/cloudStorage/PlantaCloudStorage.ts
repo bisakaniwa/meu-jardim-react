@@ -2,12 +2,13 @@ import { UploadTask, deleteObject, getDownloadURL, getStorage, ref, uploadBytesR
 import { firebaseAuth } from "../../config/firebase-config";
 import { useState } from 'react'
 import { Planta } from "../../interfaces/PlantaInterface";
-import { PlantaService } from "../database/PlantaService";
 import { FirestoreService } from "../firestore/FirestoreService";
+import { useFirebaseUserContext } from "../../hooks/useFirebaseUserContext";
 
 export const PlantaCloudStorage = () => {
     const storage = getStorage();
-    const user = firebaseAuth.currentUser;
+    const { user } = useFirebaseUserContext()
+    // const user = firebaseAuth.currentUser;
     const [progressoUpload, setProgressoUpload] = useState<number>(0)
     const [isPaused, setIsPaused] = useState<boolean>(false)
     const { addFotoPlanta } = FirestoreService()

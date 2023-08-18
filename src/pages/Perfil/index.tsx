@@ -1,15 +1,12 @@
 import { Avatar, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import vovoJuju from '../../styles/user-pic/vovojuju.png'
-import { UserContext } from '../../context/UserContext/context';
-import { useContext } from 'react';
 import './index.css'
 import { Outlet, useNavigate } from 'react-router-dom';
-import { firebaseAuth } from '../../config/firebase-config';
+import { useFirebaseUserContext } from '../../hooks/useFirebaseUserContext';
 
 export const Perfil = () => {
-    const { user } = useContext(UserContext);
-    const usuario = firebaseAuth.currentUser;
     const navigate = useNavigate();
+    const { user } = useFirebaseUserContext()
 
     const handleVoltar = () => {
         navigate("/home");
@@ -25,7 +22,7 @@ export const Perfil = () => {
 
 
     // TODO: inserir mais informações advindas do auth
-    
+
     return (
         <Card raised sx={{ width: "85%", ml: "7%", mt: "5%" }}>
             <CardContent>
@@ -42,21 +39,21 @@ export const Perfil = () => {
                         <Typography fontSize="2.5rem" textAlign="center" mt="2%" mb="2%"> Perfil </Typography>
                         <Grid container direction="column" ml="10%">
                             <Grid item>
-                                <Typography fontSize="1.5rem" mb="2%"> Nome de usuário: {usuario?.displayName} </Typography>
+                                <Typography fontSize="1.5rem" mb="2%"> Nome de usuário: {user?.displayName} </Typography>
                             </Grid>
 
                             <Grid item>
-                                <Typography fontSize="1.5rem" mb="2%"> E-mail: {usuario?.email} </Typography>
+                                <Typography fontSize="1.5rem" mb="2%"> E-mail: {user?.email} </Typography>
                             </Grid>
 
                             <Grid item>
                                 <Typography fontSize="1.5rem" mb="2%">
-                                    E-mail verificado: {usuario?.emailVerified ? "Sim" : "Não"}
+                                    E-mail verificado: {user?.emailVerified ? "Sim" : "Não"}
                                 </Typography>
                             </Grid>
 
                             <Grid item hidden>
-                                <Typography fontSize="1.5rem"> E-mail: {user.email} </Typography>
+                                <Typography fontSize="1.5rem"> E-mail: {user?.email} </Typography>
                             </Grid>
 
                             <Grid item mt="8%" ml="22%" mb="3%">
@@ -86,7 +83,7 @@ export const Perfil = () => {
                     </Grid>
 
                     <Grid item xs={6}>
-                        <Avatar variant="rounded" src={usuario?.photoURL ?? vovoJuju}
+                        <Avatar variant="rounded" src={user?.photoURL ?? vovoJuju}
                             sx={{ height: "75%", width: "45%", ml: "40%", mt: "5%", mb: "10%" }} />
                     </Grid>
                 </Grid>

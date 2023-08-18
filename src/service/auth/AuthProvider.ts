@@ -1,19 +1,19 @@
-import { GoogleAuthProvider, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
+import { GoogleAuthProvider, User, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
 import { firebaseAuth } from '../../config/firebase-config'
 import { useNavigate } from 'react-router-dom';
 import { FirebaseError } from 'firebase/app';
-
+import { useFirebaseUserContext } from '../../hooks/useFirebaseUserContext';
 
 export const AuthProvider = () => {
     firebaseAuth.languageCode = 'pt-BR'
     const googleProvider = new GoogleAuthProvider();
-    const user = firebaseAuth.currentUser;
+    const { user, setUser } = useFirebaseUserContext();
     const navigate = useNavigate();
-    
-    onAuthStateChanged(firebaseAuth, (user) => {
+
+    onAuthStateChanged(firebaseAuth, async (user) => {
         if (user) {
-            console.log("Usuário logado: " + user.email)
-    
+            setUser(user)
+
         } else {
             console.log("Nenhum usuário logado.")
         }
@@ -39,7 +39,6 @@ export const AuthProvider = () => {
     const loginEmailSenha = async (email: string, password: string) => {
         signInWithEmailAndPassword(firebaseAuth, email, password)
             .then(() => {
-                alert("Login realizado com sucesso!")
                 navigate("/home")
             })
 
@@ -88,6 +87,7 @@ export const AuthProvider = () => {
 
     const sair = async () => {
         signOut(firebaseAuth)
+            .then(() => setUser({} as User))
             .catch((error) => {
                 alert("Houve um problema ao sair da sua conta.")
                 console.log(error)

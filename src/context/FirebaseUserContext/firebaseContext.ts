@@ -1,12 +1,13 @@
 import { createContext } from "react"
-import { FirebaseUser } from "../../interfaces/FirebaseUserInterface";
+import { User } from "firebase/auth";
+import { firebaseAuth } from "../../config/firebase-config";
 
 type FirebaseUserType = {
-    user: FirebaseUser,
-    setUser: React.Dispatch<React.SetStateAction<FirebaseUser>>,
+    user: User | null,
+    setUser: React.Dispatch<React.SetStateAction<User>>,
 };
 
 export const FirebaseUserContext = createContext<FirebaseUserType>({
-    user: {} as FirebaseUser,
+    user: firebaseAuth.currentUser,
     setUser: () => { },
 });

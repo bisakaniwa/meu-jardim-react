@@ -119,6 +119,7 @@ export const LoginFirebase = () => {
                                 className="botaoLogin"
                                 type="submit"
                                 variant="contained"
+                                color="success"
                             >
                                 Login
                             </Button>

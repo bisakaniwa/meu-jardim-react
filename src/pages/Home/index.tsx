@@ -1,16 +1,17 @@
-// import { useContext } from "react";
-// import { UserContext } from "../../context/UserContext/context"
 import { Avatar, Box, Grid, Typography } from '@mui/material'
 import happySucculent from '../../styles/icons/happy-succulent.png'
 import { Link, useNavigate } from "react-router-dom";
 import { AuthProvider } from "../../service/auth/AuthProvider";
 import './index.css'
 import { firebaseAuth } from '../../config/firebase-config';
+import { useFirebaseUserContext } from '../../hooks/useFirebaseUserContext';
+import { useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const Home = () => {
     const { sair } = AuthProvider();
     const navigate = useNavigate();
-    const user = firebaseAuth.currentUser;
+    const { user } = useFirebaseUserContext()
 
     const handleSair = () => {
         sair();
@@ -68,9 +69,10 @@ export const Home = () => {
                         <Grid item xs={12}>
                             <Typography fontSize="2rem" textAlign="center" mt="3%"> Suas plantas favoritas: </Typography>
                         </Grid>
-                        {/* faz um get e um map */}
-                        <Grid item xs={4} spacing={2}>
 
+                        {/* faz um get e um map */}
+                        <Grid item xs={4}>
+                            {/* Inserir aqui as plantas favoritas */}
                         </Grid>
                     </Grid>
                 </Grid>

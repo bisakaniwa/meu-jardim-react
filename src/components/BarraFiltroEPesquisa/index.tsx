@@ -27,7 +27,7 @@ export const BarraFiltroEPesquisa = ({ setPlantaPesquisada, funcaoPesquisa }: Fi
             </Grid>
             <Grid item mt="0.6%">
                 <Tooltip title="Pesquisar">
-                    <IconButton onClick={funcaoPesquisa} disabled>
+                    <IconButton onClick={() => {}}>
                         <SearchIcon sx={{ fontSize: "26px", color: "black" }} />
                     </IconButton>
                 </Tooltip>

@@ -3,9 +3,11 @@ import { ref, push, remove, update, onValue, query, orderByChild, set } from 'fi
 import { Planta } from "../../interfaces/PlantaInterface";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useFirebaseUserContext } from "../../hooks/useFirebaseUserContext";
 
 export const PlantaService = () => {
-    const user = firebaseAuth.currentUser;
+    const { user } = useFirebaseUserContext()
+    // const user = firebaseAuth.currentUser;
     const navigate = useNavigate()
     const plantaDb = ref(database, "users/" + user?.uid + "/plantas")
     const [listaPlantas, setListaPlantas] = useState<Planta[]>([])
@@ -77,7 +79,7 @@ export const PlantaService = () => {
         return push(ref(database, `users/${user?.uid}/plantas/${planta?.plantaId}/minhaPlanta`), {
             urlDaFoto: urlDaFoto
         }).then(() => console.log("adicionado"))
-        .catch((error) => console.log(error))
+            .catch((error) => console.log(error))
     }
 
     const buscarFotosMinhaPlanta = (planta: Planta) => {
@@ -93,6 +95,8 @@ export const PlantaService = () => {
         }, (error: Error) => console.log(error)), firebaseAuth.currentUser
     }
 
-    return { cadastrarPlanta, editarPlanta, excluirPlanta, pesquisarPlantas, listaPlantas, buscarEmTempoReal, addFotoPlanta,
-         buscarFotosMinhaPlanta, listaFotos }
+    return {
+        cadastrarPlanta, editarPlanta, excluirPlanta, pesquisarPlantas, listaPlantas, buscarEmTempoReal, addFotoPlanta,
+        buscarFotosMinhaPlanta, listaFotos
+    }
 }
