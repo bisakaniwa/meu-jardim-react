@@ -1,73 +1,84 @@
-import { Button, Card, CardContent, Grid, IconButton, Tooltip, Typography } from '@mui/material'
-import { useEffect, useState, useCallback } from 'react'
-import plantaPlaceholder from '../../../styles/img-placeholders/planta-placeholder1.avif'
-import { useNavigate } from 'react-router-dom'
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { ModalConfirmacao } from '../../../components/ModalConfirmacao'
-import { PlantaService } from '../../../service/database/PlantaService'
-import { Planta } from '../../../interfaces/PlantaInterface'
-import { usePlantaContext } from '../../../hooks/usePlantaContext'
-import { BarraFiltroEPesquisa } from '../../../components/BarraFiltroEPesquisa'
+import { useEffect, useState, useCallback } from 'react';
+import { Button, Card, CardContent, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { PlantaService } from '../../../service/database/PlantaService';
+import { Planta } from '../../../interfaces/PlantaInterface';
+import { usePlantaContext } from '../../../hooks/usePlantaContext';
 import { FirestoreService } from '../../../service/firestore/FirestoreService';
-import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth } from '../../../config/firebase-config';
+import { BarraFiltroEPesquisa } from '../../../components/BarraFiltroEPesquisa';
+import { ModalConfirmacao } from '../../../components/ModalConfirmacao';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import plantaPlaceholder from '../../../styles/img-placeholders/planta-placeholder1.avif';
+import { RootState } from '../../../redux/configureStore';
+import { connect, ConnectedProps } from 'react-redux';
 
-export const VerPlantas = () => {
+const mapStateToProps = (state: RootState) => ({
+    userId: state.user.userData.userId,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type CombinedProps = PropsFromRedux & { userId: string };
+
+const CarregarPlantas = ({ userId }: CombinedProps) => {
     const navigate = useNavigate();
-    const [isAberto, setIsAberto] = useState<boolean>(false)
+    const [isAberto, setIsAberto] = useState<boolean>(false);
     const { pesquisarPlantas } = PlantaService();
     const { verPlantas, listaPlantas, excluirPlanta } = FirestoreService();
-    const [plantaSelecionada, setPlantaSelecionada] = useState<Planta>({} as Planta)
+    const [plantaSelecionada, setPlantaSelecionada] = useState<Planta>({} as Planta);
     const { setPlanta } = usePlantaContext();
-    const [plantaPesquisada, setPlantaPesquisada] = useState<string>("")
-    const buscaPlantas = useCallback(verPlantas, [])
+    const [plantaPesquisada, setPlantaPesquisada] = useState<string>("");
+    const buscaPlantas = useCallback(verPlantas, []);
 
     const handleVoltar = () => {
-        navigate("/home")
-    }
+        navigate("/home");
+    };
 
     const handleAbrir = (planta: Planta) => {
-        setIsAberto(true)
-        setPlantaSelecionada(planta)
-    }
+        setIsAberto(true);
+        setPlantaSelecionada(planta);
+    };
 
     const handleFechar = () => {
-        setIsAberto(false)
-    }
+        setIsAberto(false);
+    };
 
     const handleExcluirPlanta = () => {
-        excluirPlanta(plantaSelecionada.plantaId!)
-        alert(`${plantaSelecionada.nome} foi excluída`)
-        setIsAberto(false)
-    }
+        excluirPlanta(plantaSelecionada.plantaId!, userId);
+        alert(`${plantaSelecionada.nome} foi excluída`);
+        setIsAberto(false);
+    };
 
     const handleEditarPlanta = (planta: Planta) => {
-        setPlanta(planta)
-        navigate("/plantas/editar")
-    }
+        setPlanta(planta);
+        navigate("/plantas/editar");
+    };
 
     const handlePesquisarPlanta = () => {
-        pesquisarPlantas(plantaPesquisada)
-    }
+        pesquisarPlantas(plantaPesquisada);
+    };
 
     const handlePaginaDaPlanta = (planta: Planta) => {
-        setPlanta(planta)
-        navigate("/plantas/minha-planta")
-    }
+        setPlanta(planta);
+        navigate("/plantas/minha-planta");
+    };
 
     useEffect(() => {
-        firebaseAuth.authStateReady()
-            .then(() => verPlantas())
-            .catch((error) => console.log(error))
-    }, [])
+        if (userId && (userId !== undefined) && (userId !== "")) {
+            firebaseAuth.authStateReady()
+                .then(() => verPlantas(userId))
+                .catch((error) => console.log(error))
+        }
+    }, [userId])
 
     // TODO: tornar os cards expansivos && criar páginas individuais para as plantas de referência
     // TODO: anexar o delete da planta de referência ao das imagens pessoais adicionadas
     // TODO: plantas preferidas: fotos pessoais, plantas de referência ou ambas?
 
     return (
-        <Grid container direction="column" alignContent="center" ml="5%" mt="2%">
+        <Grid container direction="column" alignContent="center" pl="5%" pt="2%" pr="4%">
             <Grid container direction="row">
                 <Grid item mt="1%" mb="1%" ml="2%">
                     <Button
@@ -102,21 +113,21 @@ export const VerPlantas = () => {
                 </Typography>
             </Grid>
 
-            <Grid container direction="row" ml="5%" mt="2%" columnGap="5%">
+            <Grid container direction="row" pt="2%" justifyContent="space-between">
                 {listaPlantas?.map((planta, index) =>
-                    <Card raised key={index} sx={{ mb: "5%" }}>
+                    <Card raised key={index} sx={{ mb: "3%" }}>
                         <CardContent>
                             <Grid container direction="column" alignContent="center">
                                 <Grid item onClick={() => handlePaginaDaPlanta(planta)} sx={{ cursor: "pointer" }}>
                                     <img src={planta.imagemReferencia ?? plantaPlaceholder}
-                                        alt="Imagem da planta exibida"
+                                        alt={`Imagem de ${planta.nome}`}
                                         width="300vw" height="300vh" />
                                 </Grid>
 
                                 <Grid container direction="row" justifyContent="space-between" mt="0.5%">
                                     <Grid item textAlign="center">
                                         <Typography
-                                            fontSize="1.5rem"
+                                            fontSize="1.5rem" maxWidth="80%" textAlign="start"
                                         >
                                             {planta.nome}
                                         </Typography>
@@ -159,4 +170,6 @@ export const VerPlantas = () => {
             </Grid>
         </Grid>
     )
-}
+};
+
+export const VerPlantas = connector(CarregarPlantas);

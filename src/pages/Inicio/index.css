@@ -5,5 +5,5 @@ body {
 .boas-vindas {
     font-size: 3rem !important;
     text-align: center;
-    width: 50%; 
+    width: max-content; 
 }

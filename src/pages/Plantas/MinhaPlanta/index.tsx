@@ -1,23 +1,31 @@
-import { usePlantaContext } from "../../../hooks/usePlantaContext"
-import { Button, Card, CardContent, Grid, IconButton, Tooltip, Typography } from "@mui/material"
+import { useState, useEffect } from 'react';
+import { Button, Card, CardContent, Grid, IconButton, Tooltip, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { usePlantaContext } from "../../../hooks/usePlantaContext";
 import { push, ref } from "firebase/database";
-import { useNavigate } from "react-router-dom"
 import { database } from "../../../config/firebase-config";
 import { PlantaCloudStorage } from "../../../service/cloudStorage/PlantaCloudStorage";
-import SendRoundedIcon from '@mui/icons-material/SendRounded';
-import { useState, useEffect } from 'react'
-import { CircularProgressWithLabel } from "../../../components/CircularProgressWithLabel";
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import { FirestoreService } from "../../../service/firestore/FirestoreService";
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
+import { CircularProgressWithLabel } from "../../../components/CircularProgressWithLabel";
+import { RootState } from '../../../redux/configureStore';
+import { connect, ConnectedProps } from 'react-redux';
 
-export const MinhaPlanta = () => {
+const mapStateToProps = (state: RootState) => ({
+    userId: state.user.userData.userId,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type CombinedProps = PropsFromRedux & { userId: string };
+
+const VerMinhaPlanta = ({ userId }: CombinedProps) => {
     const { planta } = usePlantaContext();
     const { uploadFotoMinhaPlanta, progressoUpload, isPaused, excluirImagem } = PlantaCloudStorage();
     const navigate = useNavigate()
     const [imagem, setImagem] = useState<File>();
     const [envioEmProgresso, setEnvioEmProgresso] = useState<boolean>(false)
     const { buscarFotosMinhaPlanta, listaFotos } = FirestoreService()
-
 
     // TODO: fazer a barra de carregamento desaparecer após 100% concluída
     // useEffect(() => {
@@ -27,36 +35,38 @@ export const MinhaPlanta = () => {
     // }, [progressoUpload])
 
     useEffect(() => {
-        buscarFotosMinhaPlanta(planta)
-    }, [])
+        if (userId && (userId !== undefined) && (userId !== "")) {
+            buscarFotosMinhaPlanta(planta, userId);
+        }
+    }, [userId]);
 
     const handleVoltar = () => {
-        navigate("/plantas")
-    }
+        navigate("/plantas");
+    };
 
     const handleAddFoto = (event: any) => {
-        const foto = event.target.files[0]
+        const foto = event.target.files[0];
         setImagem(foto);
-    }
+    };
 
     const handleEnviaFoto = () => {
         if (imagem != null) {
-            setEnvioEmProgresso(true)
+            setEnvioEmProgresso(true);
             const criarChave = push(ref(database)).key + '-' + imagem.name;
-            uploadFotoMinhaPlanta(planta, criarChave, imagem);
+            uploadFotoMinhaPlanta(planta, criarChave, imagem, userId);
         }
-    }
+    };
 
     const handleExcluirImagem = (urlDaImagem: string) => {
         // Modal confirmando a exclusão
-        excluirImagem(planta, urlDaImagem)
-    }
+        excluirImagem(planta, urlDaImagem, userId);
+    };
 
     const handlePlayPause = () => {
         if (isPaused) {
-            alert("Desculpe! A pausa de uploads ainda não foi implementada...")
-        }
-    }
+            alert("Desculpe! A pausa de uploads ainda não foi implementada...");
+        };
+    };
 
     // TODO: possibilitar legenda nas fotos
     // TODO: possibilitar cadastro de plantas individuais
@@ -68,7 +78,7 @@ export const MinhaPlanta = () => {
                 <Grid container direction="row">
                     <Grid item xs={3}>
                         <Button
-                            className='botaoVoltar'
+                            color="success"
                             variant="contained"
                             sx={{ ml: "5%", mt: "2%" }}
                             onClick={handleVoltar}
@@ -113,7 +123,7 @@ export const MinhaPlanta = () => {
                     <Grid container direction="row" justifyContent="space-evenly" columnGap="5%">
                         {listaFotos?.map((foto, index) =>
                             <Grid item key={index} mb="5%">
-                                <Card raised sx={{ backgroundColor: "beige" }}>
+                                <Card raised sx={{ backgroundColor: "white" }}>
                                     <CardContent>
                                         <Grid container direction="column">
                                             <Grid item>
@@ -141,4 +151,6 @@ export const MinhaPlanta = () => {
             </CardContent>
         </Card>
     )
-}
+};
+
+export const MinhaPlanta = connector(VerMinhaPlanta);

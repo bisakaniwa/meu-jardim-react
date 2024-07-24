@@ -1,3 +1,7 @@
 .botaoVoltar.MuiButtonBase-root, .botaoEditar.MuiButtonBase-root  {
-    background: green;
+    background-color: green;
+}
+
+.botaoVoltar.MuiButtonBase-root:hover, .botaoEditar.MuiButtonBase-root:hover  {
+    background-color: #4ac24a;
 }

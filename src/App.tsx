@@ -1,15 +1,16 @@
-import { RouterProvider } from 'react-router-dom';
-import { router } from './routes';
+import { AppRouter } from './routes';
 import { PlantaProvider } from './context/PlantaContext/plantaProvider';
-import { FirebaseUserProvider } from './context/FirebaseUserContext/firebaseProvider';
+import { Provider } from 'react-redux';
+import { store } from './redux/configureStore';
 
 function App() {
+
   return (
-    <FirebaseUserProvider>
+    <Provider store={store}>
       <PlantaProvider>
-        <RouterProvider router={router} />
+        <AppRouter />
       </PlantaProvider>
-    </FirebaseUserProvider>
+    </Provider>
   );
 }
 

@@ -1,98 +1,105 @@
-import { GoogleAuthProvider, User, createUserWithEmailAndPassword, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
+import { GoogleAuthProvider, User, UserCredential, createUserWithEmailAndPassword, getIdTokenResult, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth'
 import { firebaseAuth } from '../../config/firebase-config'
-import { useNavigate } from 'react-router-dom';
 import { FirebaseError } from 'firebase/app';
-import { useFirebaseUserContext } from '../../hooks/useFirebaseUserContext';
+import { useUserDispatch } from '../../redux/configureStore';
+import { appInitialState, clearOnLogout, saveUserData, saveUserToken } from '../../redux/user';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthProvider = () => {
-    firebaseAuth.languageCode = 'pt-BR'
+    firebaseAuth.languageCode = 'pt-BR';
     const googleProvider = new GoogleAuthProvider();
-    const { user, setUser } = useFirebaseUserContext();
+    const dispatch = useUserDispatch();
     const navigate = useNavigate();
 
-    onAuthStateChanged(firebaseAuth, async (user) => {
-        if (user) {
-            setUser(user)
-
-        } else {
-            console.log("Nenhum usuário logado.")
+    const onAuthSuccess = async (userData: User) => {
+        if (userData) {
+            let tokenInfo = await getIdTokenResult(userData, false);
+            let customUser = {
+                userId: userData?.uid,
+                displayName: userData?.displayName,
+                email: userData?.email,
+                emailVerified: userData?.emailVerified,
+                isAnonymous: userData?.isAnonymous,
+                photoURL: userData?.photoURL,
+                loginProvider: userData?.providerData[0]?.providerId,
+            };
+            let customTokenInfo = {
+                currentToken: tokenInfo?.token,
+                expirationTime: tokenInfo?.expirationTime,
+                isExpired: false,
+            };
+            dispatch(saveUserData(customUser));
+            dispatch(saveUserToken(customTokenInfo));
         }
-    })
+    }
 
     const cadastrar = async (email: string, password: string) => {
-        createUserWithEmailAndPassword(firebaseAuth, email, password)
-            .then(() => {
-                alert("Cadastro realizado com sucesso!");
-                navigate("/home")
+        await createUserWithEmailAndPassword(firebaseAuth, email, password)
+            .then(async (resposta: UserCredential) => {
+                return await onAuthSuccess(resposta.user).then(() => navigate("/home"));
             })
             .catch((error: FirebaseError) => {
-                if (error.code === "auth/weak-password") {
-                    alert("Sua senha deve ter pelo menos 6 caracteres!")
-                } else if (error.code === "auth/email-already-in-use") {
-                    alert("Esse e-mail já está cadastrado! Recupere sua senha clicando abaixo ou tente logar de outra forma.")
-                } else {
-                    alert("Algo deu errado no seu cadastro...")
-                }
-            })
-    }
+                return { error }
+            });
+    };
 
     const loginEmailSenha = async (email: string, password: string) => {
-        signInWithEmailAndPassword(firebaseAuth, email, password)
-            .then(() => {
-                navigate("/home")
+        await signInWithEmailAndPassword(firebaseAuth, email, password)
+            .then(async (resposta: UserCredential) => {
+                return await onAuthSuccess(resposta.user).then(() => navigate("/home"));
             })
-
             .catch((error: FirebaseError) => {
                 if (error.code === "auth/invalid-email" || error.code === "auth/wrong-password") {
-                    alert("Ops! Parece que o e-mail ou a senha não está correto...")
+                    alert("Ops! Parece que o e-mail ou a senha não está correto...");
                 } else if (error.code === "auth/user-not-found") {
-                    alert("Parece que você não está cadastrado(a)! Registre-se clicando abaixo!")
+                    alert("Parece que você não está cadastrado(a)! Registre-se clicando abaixo!");
                 } else {
-                    alert("Houve um erro... Por favor, tente novamente!")
-                }
-            })
-    }
+                    alert("Houve um erro... Por favor, tente novamente!");
+                };
+                console.log("erro", error);
+            });
+    };
 
     const redefinirSenha = async (email: string) => {
         sendPasswordResetEmail(firebaseAuth, email)
-            .then(() => alert("E-mail enviado com sucesso!"))
             .catch((error) => {
-                alert("Falha ao enviar e-mail.")
-                console.log(error);
+                return { error };
             })
+    };
 
-    }
-
-    const verificarEmail = async () => {
-        if (user !== null) {
-            sendEmailVerification(user)
-                .then(() => alert("E-mail enviado para" + user.email + "com sucesso."))
-                .catch((error) => {
-                    alert("Falha ao enviar e-mail.")
-                    console.log(error)
-                })
-        } else {
-            alert("Nenhum usuário logado.")
-        }
-    }
+    // const verificarEmail = async () => {
+    //     if (user !== null) {
+    //         sendEmailVerification(user)
+    //             .then(() => alert("E-mail enviado para" + user.email + "com sucesso."))
+    //             .catch((error) => {
+    //                 alert("Falha ao enviar e-mail.")
+    //                 console.log(error)
+    //             })
+    //     } else {
+    //         alert("Nenhum usuário logado.")
+    //     }
+    // };
 
     const loginGoogle = async () => {
-        signInWithPopup(firebaseAuth, googleProvider)
-            .then(() => navigate("/home"))
-            .catch((error) => {
-                alert("Erro ao autenticar usando o Google.")
-                console.log(error)
+        await signInWithPopup(firebaseAuth, googleProvider)
+            .then(async (resposta: UserCredential) => {
+                return await onAuthSuccess(resposta.user).then(() => navigate("/home"));
             })
-    }
+            .catch((error: FirebaseError) => {
+                alert("Erro ao autenticar usando o Google");
+                return { error };
+            });
+    };
 
     const sair = async () => {
-        signOut(firebaseAuth)
-            .then(() => setUser({} as User))
-            .catch((error) => {
-                alert("Houve um problema ao sair da sua conta.")
-                console.log(error)
-            })
-    }
+        await signOut(firebaseAuth).then(() => {
+            dispatch(clearOnLogout(appInitialState));
+            navigate("/");
+        }).catch((error) => {
+            console.log(error);
+            return { error };
+        })
+    };
 
-    return { cadastrar, loginEmailSenha, redefinirSenha, verificarEmail, loginGoogle, sair }
-}
+    return { cadastrar, loginEmailSenha, redefinirSenha, loginGoogle, sair };
+};

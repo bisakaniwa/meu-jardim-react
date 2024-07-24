@@ -4,23 +4,24 @@ import welcomeCactus from '../../styles/icons/welcomeCactus.png'
 import { LoginFirebase } from '../../components/LoginFirebase';
 
 export const Inicio = () => {
-    
+
     return (
-        <Grid container direction="row" spacing={2}>
+        <Grid container direction="row" spacing={2} alignItems="center">
             <Grid item xs={6}>
                 <Grid container
                     direction="column"
                     spacing={2}
-                    ml="19%" mt="15%"
+                    mt="15%"
+                    alignItems="center"
                 >
-                    <Grid item ml="15%">
+                    <Grid item justifyContent="center" display="flex">
                         <Avatar
                             src={welcomeCactus}
                             variant='rounded'
-                            sx={{ width: "20%", height: "30%" }}
+                            sx={{ width: "25%", height: "35%" }}
                         />
                     </Grid>
-                    <Grid item>
+                    <Grid item width="fit-content">
                         <Typography className='boas-vindas'> Bem-vindo(a) de volta! </Typography>
                     </Grid>
                 </Grid>

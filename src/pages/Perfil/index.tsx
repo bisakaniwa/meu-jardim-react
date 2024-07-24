@@ -1,12 +1,21 @@
 import { Avatar, Button, Card, CardContent, Grid, Typography } from '@mui/material';
-import vovoJuju from '../../styles/user-pic/vovojuju.png'
 import './index.css'
 import { Outlet, useNavigate } from 'react-router-dom';
-import { useFirebaseUserContext } from '../../hooks/useFirebaseUserContext';
+import { RootState } from '../../redux/configureStore';
+import { connect, ConnectedProps } from 'react-redux';
+import { ReduxUser } from '../../interfaces/ReduxInterfaces';
+import vovoJuju from '../../styles/user-pic/vovojuju.png';
 
-export const Perfil = () => {
+const mapStateToProps = (state: RootState) => ({
+    user: state.user.userData,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type CombinedProps = PropsFromRedux & { user: ReduxUser };
+
+const VerPerfil = ({ user }: CombinedProps) => {
     const navigate = useNavigate();
-    const { user } = useFirebaseUserContext()
 
     const handleVoltar = () => {
         navigate("/home");
@@ -29,7 +38,7 @@ export const Perfil = () => {
                 <Grid container direction="row">
                     <Grid item xs={12}>
                         <Button
-                            className='botaoVoltar'
+                            color="success"
                             variant="contained"
                             sx={{ ml: "5%", mt: "2%" }}
                             onClick={handleVoltar}
@@ -90,4 +99,6 @@ export const Perfil = () => {
             </CardContent>
         </Card>
     )
-}
+};
+
+export const Perfil = connector(VerPerfil);

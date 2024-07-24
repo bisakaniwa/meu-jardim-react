@@ -1,18 +1,17 @@
 import { addDoc, arrayUnion, collection, deleteDoc, doc, onSnapshot, query, updateDoc } from "firebase/firestore"
-import { firebaseAuth, firestore } from "../../config/firebase-config"
+import { firestore } from "../../config/firebase-config"
 import { Planta } from "../../interfaces/PlantaInterface";
 import { useNavigate } from "react-router-dom";
 import { useState } from 'react'
-import { useFirebaseUserContext } from "../../hooks/useFirebaseUserContext";
+import { getUserData } from "../../redux/configureStore";
 
 export const FirestoreService = () => {
-    const { user } = useFirebaseUserContext()
-    const dbRef = collection(firestore, `users/${user?.uid}/plantas`);
     const navigate = useNavigate()
     const [listaPlantas, setListaPlantas] = useState<Planta[]>([]);
     const [listaFotos, setListaFotos] = useState<[]>([]);
 
-    const cadastrarPlanta = async (planta: Planta) => {
+    const cadastrarPlanta = async (planta: Planta, userId: string) => {
+        const dbRef = collection(firestore, `users/${userId}/plantas`);
         await addDoc(dbRef, {
             nome: planta.nome,
             nomeCientifico: planta.nomeCientifico,
@@ -28,8 +27,8 @@ export const FirestoreService = () => {
             })
     }
 
-    const editarPlanta = async (dadosAtualizados: Planta) => {
-        await updateDoc(doc(firestore, `users/${user?.uid}/plantas/${dadosAtualizados.plantaId}`), {
+    const editarPlanta = async (dadosAtualizados: Planta, userId: string) => {
+        await updateDoc(doc(firestore, `users/${userId}/plantas/${dadosAtualizados.plantaId}`), {
             plantaId: dadosAtualizados.plantaId,
             nome: dadosAtualizados.nome,
             nomeCientifico: dadosAtualizados?.nomeCientifico,
@@ -44,7 +43,8 @@ export const FirestoreService = () => {
             })
     }
 
-    const verPlantas = async () => {
+    const verPlantas = async (userId: string) => {
+        const dbRef = collection(firestore, `users/${userId}/plantas`);
         const plantaQuery = query(dbRef);
         onSnapshot(plantaQuery, (resultadoLista) => {
             const lista: Planta[] = [];
@@ -64,8 +64,8 @@ export const FirestoreService = () => {
         }, (error) => console.log(error.code))
     }
 
-    const excluirPlanta = async (plantaId: string) => {
-        await deleteDoc(doc(firestore, `users/${user?.uid}/plantas/${plantaId}`))
+    const excluirPlanta = async (plantaId: string, userId: string) => {
+        await deleteDoc(doc(firestore, `users/${userId}/plantas/${plantaId}`))
             // TODO: excluir as coleções derivadas desse doc
             .catch((error) => {
                 alert("Ops! Algo deu errado ao tentar excluir sua planta, tente novamente.")
@@ -73,8 +73,8 @@ export const FirestoreService = () => {
             })
     }
 
-    const addFotoPlanta = async (planta: Planta, urlDaFoto: string) => {
-        await updateDoc(doc(firestore, `users/${user?.uid}/plantas/${planta?.plantaId}`), {
+    const addFotoPlanta = async (planta: Planta, urlDaFoto: string, userId: string) => {
+        await updateDoc(doc(firestore, `users/${userId}/plantas/${planta?.plantaId}`), {
             minhaPlanta: arrayUnion(urlDaFoto)
         })
             .catch((error) => {
@@ -82,8 +82,8 @@ export const FirestoreService = () => {
             })
     }
 
-    const buscarFotosMinhaPlanta = async (planta: Planta) => {
-        onSnapshot(doc(firestore, `users/${user?.uid}/plantas/${planta?.plantaId}`),
+    const buscarFotosMinhaPlanta = async (planta: Planta, userId: string) => {
+        onSnapshot(doc(firestore, `users/${userId}/plantas/${planta?.plantaId}`),
             (perfil) => {
                 const arrayMinhaPlanta = perfil.data()?.minhaPlanta;
                 setListaFotos(arrayMinhaPlanta)

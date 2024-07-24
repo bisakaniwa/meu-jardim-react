@@ -1,26 +1,22 @@
 import { UploadTask, deleteObject, getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage"
-import { firebaseAuth } from "../../config/firebase-config";
 import { useState } from 'react'
 import { Planta } from "../../interfaces/PlantaInterface";
 import { FirestoreService } from "../firestore/FirestoreService";
-import { useFirebaseUserContext } from "../../hooks/useFirebaseUserContext";
 
 export const PlantaCloudStorage = () => {
     const storage = getStorage();
-    const { user } = useFirebaseUserContext()
-    // const user = firebaseAuth.currentUser;
-    const [progressoUpload, setProgressoUpload] = useState<number>(0)
-    const [isPaused, setIsPaused] = useState<boolean>(false)
-    const { addFotoPlanta } = FirestoreService()
+    const [progressoUpload, setProgressoUpload] = useState<number>(0);
+    const [isPaused, setIsPaused] = useState<boolean>(false);
+    const { addFotoPlanta } = FirestoreService();
 
-    const uploadFotoMinhaPlanta = (planta: Planta, chaveDaImagem: string, imagem: File) => {
-        const storageRef = ref(storage, `plantas/${user?.uid}/${planta.nome}/${chaveDaImagem}`);
+    const uploadFotoMinhaPlanta = (planta: Planta, chaveDaImagem: string, imagem: File, userId: string) => {
+        const storageRef = ref(storage, `plantas/${userId}/${planta.nome}/${chaveDaImagem}`);
         const uploadFoto = uploadBytesResumable(storageRef, imagem)
 
-        acompanharUpload(planta, chaveDaImagem, uploadFoto)
-    }
+        acompanharUpload(planta, chaveDaImagem, uploadFoto, userId)
+    };
 
-    const acompanharUpload = (planta: Planta, chaveDaImagem: string, upload: UploadTask) => {
+    const acompanharUpload = (planta: Planta, chaveDaImagem: string, upload: UploadTask, userId: string) => {
         upload.on('state_changed', (estadoAtual) => {
             const progresso = (estadoAtual.bytesTransferred / estadoAtual.totalBytes) * 100;
             setProgressoUpload(progresso)
@@ -44,27 +40,27 @@ export const PlantaCloudStorage = () => {
             },
             () => {
                 getDownloadURL(upload.snapshot.ref).then((downloadURL) => {
-                    addFotoPlanta(planta, downloadURL)
+                    addFotoPlanta(planta, downloadURL, userId)
                 })
 
                 alert("Upload concluído com sucesso!")
             }
         )
-    }
+    };
 
     const pausarUpload = (upload: UploadTask) => {
-        upload.pause()
-        setIsPaused(true)
-    }
+        upload.pause();
+        setIsPaused(true);
+    };
 
     const retomarUpload = (upload: UploadTask) => {
-        upload.resume()
-        setIsPaused(false)
-    }
+        upload.resume();
+        setIsPaused(false);
+    };
 
     const cancelarUpload = (upload: UploadTask) => {
-        upload.cancel()
-    }
+        upload.cancel();
+    };
 
     // const mostrarFotos = async (nomeDaPlanta: string) => {
     //     const caminho = ref(storage, `plantas/${user?.uid}/${nomeDaPlanta}`)
@@ -77,13 +73,11 @@ export const PlantaCloudStorage = () => {
     // }
 
     // TODO: ao excluir uma planta, excluir todas as imagens relacionadas a ela
-    const excluirImagem = (planta: Planta, urlDaImagem: string) => {
-        deleteObject(ref(storage, `plantas/${user?.uid}/${planta.nome}/${urlDaImagem}`))
+    const excluirImagem = (planta: Planta, urlDaImagem: string, userId: string) => {
+        deleteObject(ref(storage, `plantas/${userId}/${planta.nome}/${urlDaImagem}`))
             .then(() => alert("sucesso"))
             .catch((error) => console.log(error))
-
-
-    }
+    };
 
     return { uploadFotoMinhaPlanta, progressoUpload, isPaused, pausarUpload, retomarUpload, cancelarUpload, excluirImagem }
-}
+};

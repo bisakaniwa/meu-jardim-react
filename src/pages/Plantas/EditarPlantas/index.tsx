@@ -1,25 +1,33 @@
-import { Card, CardContent, Grid, Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom"
-import { PlantaForm } from "../../../components/PlantaForm"
-import { Planta } from "../../../interfaces/PlantaInterface"
-import { SubmitHandler } from "react-hook-form"
-import { PlantaService } from "../../../service/database/PlantaService"
-import { usePlantaContext } from "../../../hooks/usePlantaContext"
-import { FirestoreService } from "../../../service/firestore/FirestoreService"
+import { Card, CardContent, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { SubmitHandler } from "react-hook-form";
+import { FirestoreService } from "../../../service/firestore/FirestoreService";
+import { usePlantaContext } from "../../../hooks/usePlantaContext";
+import { PlantaForm } from "../../../components/PlantaForm";
+import { Planta } from "../../../interfaces/PlantaInterface";
+import { RootState } from "../../../redux/configureStore";
+import { connect, ConnectedProps } from "react-redux";
 
-export const EditarPlantas = () => {
-    // const { editarPlanta } = PlantaService();
-    const {editarPlanta} = FirestoreService()
+const mapStateToProps = (state: RootState) => ({
+    userId: state.user.userData.userId,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type CombinedProps = PropsFromRedux & { userId: string };
+
+const EdicaoPlantas = ({ userId }: CombinedProps) => {
+    const { editarPlanta } = FirestoreService();
     const { planta } = usePlantaContext();
     const navigate = useNavigate();
 
     const handleEditar: SubmitHandler<Planta> = (data: Planta) => {
-        editarPlanta(data)
-    }
+        editarPlanta(data, userId);
+    };
 
     const handleVoltar = () => {
-        navigate("/plantas")
-    }
+        navigate("/plantas");
+    };
 
     return (
         <Card raised sx={{ width: "80%", mt: "5%", ml: "10%" }}>
@@ -43,4 +51,6 @@ export const EditarPlantas = () => {
             </CardContent>
         </Card>
     )
-}
+};
+
+export const EditarPlantas = connector(EdicaoPlantas);

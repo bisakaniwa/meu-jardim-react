@@ -1,16 +1,26 @@
-import { SubmitHandler } from "react-hook-form"
-import { PlantaForm } from "../../../components/PlantaForm"
-import { Planta } from "../../../interfaces/PlantaInterface"
-import { useNavigate } from "react-router-dom"
-import { Card, CardContent, Grid, Typography } from '@mui/material'
-import { FirestoreService } from "../../../service/firestore/FirestoreService"
+import { Card, CardContent, Grid, Typography } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import { SubmitHandler } from "react-hook-form";
+import { FirestoreService } from "../../../service/firestore/FirestoreService";
+import { Planta } from "../../../interfaces/PlantaInterface";
+import { PlantaForm } from "../../../components/PlantaForm";
+import { RootState } from '../../../redux/configureStore';
+import { connect, ConnectedProps } from 'react-redux';
 
-export const CadastroPlantas = () => {
+const mapStateToProps = (state: RootState) => ({
+    userId: state.user.userData.userId,
+});
+
+const connector = connect(mapStateToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+type CombinedProps = PropsFromRedux & { userId: string };
+
+const CadastroPlantas = ({ userId }: CombinedProps) => {
     const navigate = useNavigate();
     const { cadastrarPlanta } = FirestoreService();
 
     const handleCadastrar: SubmitHandler<Planta> = (data: Planta) => {
-        cadastrarPlanta(data)
+        cadastrarPlanta(data, userId);
     }
 
     const voltarHome = () => {
@@ -38,4 +48,6 @@ export const CadastroPlantas = () => {
             </CardContent>
         </Card>
     )
-}
+};
+
+export const CadastrarPlantas = connector(CadastroPlantas);

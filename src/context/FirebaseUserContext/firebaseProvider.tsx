@@ -13,7 +13,9 @@ export const FirebaseUserProvider = ({ children }: FirebaseProviderProps) => {
     useEffect(() => {
         onAuthStateChanged(firebaseAuth, (firebaseUser) => {
             if (firebaseUser) {
-                setUser(firebaseUser)
+                setUser(firebaseUser);
+            } else {
+                setUser({} as User);
             }
         })
     }, [])

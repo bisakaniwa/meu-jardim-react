@@ -6,56 +6,75 @@ import { ChangeEvent, useState } from "react";
 import GoogleIcon from '@mui/icons-material/Google';
 import './index.css';
 import { useNavigate } from "react-router-dom";
+import { EMAIL_PATTERN } from "../../static/regexPatterns";
+import { ModalAviso } from "../ModalAviso";
 
 export const LoginFirebase = () => {
-    const { register, handleSubmit } = useForm<LoginInterface>();
+    const { register, handleSubmit, formState } = useForm<LoginInterface>({ reValidateMode: "onSubmit" });
+    const { errors } = formState;
     const { redefinirSenha, loginEmailSenha, loginGoogle } = AuthProvider();
-    const [open, setOpen] = useState<boolean>(false)
-    const [email, setEmail] = useState<string>("")
-    const navigate = useNavigate()
+    const [isModalAberto, setIsModalAberto] = useState<boolean>(false);
+    const [recuperarEmail, setRecuperarEmail] = useState<string>("");
+    const [isFeedbackAberto, setIsFeedbackAberto] = useState<boolean>(false);
+    const [mensagemModal, setMensagemModal] = useState<string>("");
+    const navigate = useNavigate();
 
+    const login: SubmitHandler<LoginInterface> = async (data: LoginInterface) => {
+        await loginEmailSenha(data.email, data.password);
+    };
 
-    const login: SubmitHandler<LoginInterface> = (data: LoginInterface) => {
-        loginEmailSenha(data.email, data.password);
-    }
-
-    const handleOpen = () => {
-        setOpen(true)
-    }
+    const handleAbrirModal = () => {
+        setIsModalAberto(true);
+    };
 
     const handleEmail = (event: ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value)
-    }
+        setRecuperarEmail(event.target.value);
+    };
 
-    const handleRedefineSenha = () => {
-        redefinirSenha(email)
-    }
+    const handleRedefineSenha = async () => {
+        await redefinirSenha(recuperarEmail).then(() => {
+            setMensagemModal("E-mail enviado com sucesso!");
+        }).catch((error) => {
+            console.log(error);
+            setMensagemModal("Falha ao enviar e-mail.");
+        }).finally(() => setIsFeedbackAberto(true));
+    };
 
-    const handleClose = () => {
-        setOpen(false)
-    }
+    const handleFecharModal = () => {
+        setIsModalAberto(false);
+    };
 
-    const handleLoginGoogle = () => {
-        loginGoogle()
-    }
+    const handleLoginGoogle = async () => {
+        await loginGoogle();
+    };
 
     const handleCadastro = () => {
-        navigate("/cadastro-firebase")
-    }
+        navigate("/cadastro");
+    };
 
     return (
-        <Card raised sx={{ width: "65%", mt: "15%", ml: "3%" }}>
+        <Card raised sx={{ width: "65%", mt: "15%", ml: "3%", maxWidth: "402px" }}>
             <Typography textAlign={"center"} className='tituloLogin'> Login </Typography>
             <CardContent sx={{ mb: "3%" }}>
-
                 <form onSubmit={handleSubmit(login)}>
                     <Grid container direction="column" alignContent="center">
                         <Grid item xs={8}>
                             <TextField
                                 variant="outlined"
                                 label="E-mail"
-                                {...register("email", { required: true })}
+                                {...register("email", {
+                                    required: {
+                                        value: true,
+                                        message: "Campo obrigatório!"
+                                    },
+                                    pattern: {
+                                        value: new RegExp(EMAIL_PATTERN),
+                                        message: "Insira um e-mail válido!"
+                                    },
+                                })}
                                 sx={{ mb: 2 }}
+                                error={!!errors?.email}
+                                helperText={errors?.email && <span color="red"> {errors?.email?.message?.toString()} </span>}
                             />
                         </Grid>
 
@@ -64,43 +83,55 @@ export const LoginFirebase = () => {
                                 type="password"
                                 variant="outlined"
                                 label="Senha"
-                                {...register("password", { required: true })}
+                                {...register("password", {
+                                    required: {
+                                        value: true,
+                                        message: "Campo obrigatório!"
+                                    },
+                                })}
                                 sx={{ mb: 2 }}
+                                error={!!errors?.password}
+                                helperText={errors?.password && <span color="red"> {errors?.email?.message?.toString()} </span>}
                             />
                         </Grid>
 
-                        <Grid item sx={{ textAlign: "start", mb: 1, ml: 1.2 }}>
+                        <Grid item sx={{ textAlign: "center", mb: 1, ml: 1.2 }}>
                             <Typography
-                                onClick={handleOpen}
+                                onClick={handleAbrirModal}
                                 sx={{ cursor: "pointer", textDecoration: "underline" }}
                             >
-                                Esqueci minha senha.
+                                Esqueci minha senha
                             </Typography>
                         </Grid>
 
-                        <Dialog open={open} onClose={handleClose}>
+                        <Dialog open={isModalAberto} onClose={handleFecharModal} fullWidth maxWidth="xs">
                             <DialogTitle>
-                                Digite seu e-mail cadastrado para que possamos enviar um link de recuperação de senha para você!
+                                Digite seu e-mail cadastrado:
                             </DialogTitle>
 
                             <DialogContent>
-                                <TextField
-                                    variant="standard"
-                                    type="email"
-                                    label="Insira seu e-mail"
-                                    required
-                                    onChange={handleEmail}
-                                    sx={{ width: "20vw" }}
-                                />
+                                <Grid container direction="row" width="395px" justifyContent="space-between" alignItems="end">
+                                    <Grid item>
+                                        <TextField
+                                            variant="standard"
+                                            type="email"
+                                            label="Insira seu e-mail"
+                                            required
+                                            onChange={handleEmail}
+                                            sx={{ width: "22vw" }}
+                                        />
+                                    </Grid>
 
-                                <Button
-                                    sx={{ ml: "15%" }}
-                                    type="submit"
-                                    variant="contained"
-                                    onClick={handleRedefineSenha}
-                                >
-                                    Enviar
-                                </Button>
+                                    <Grid item>
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            onClick={handleRedefineSenha}
+                                        >
+                                            Enviar
+                                        </Button>
+                                    </Grid>
+                                </Grid>
 
                             </DialogContent>
                         </Dialog>
@@ -114,7 +145,7 @@ export const LoginFirebase = () => {
                             </Typography>
                         </Grid>
 
-                        <Grid item ml="16%">
+                        <Grid item ml="20%">
                             <Button
                                 className="botaoLogin"
                                 type="submit"
@@ -144,6 +175,14 @@ export const LoginFirebase = () => {
                     </Grid>
                 </Grid>
             </CardContent>
-        </Card>
+
+            <ModalAviso
+                isAberto={isFeedbackAberto}
+                handleFechar={() => setIsFeedbackAberto(false)}
+                textoPrincipal={mensagemModal}
+                textoBotao="Fechar"
+                acaoBotao={() => setIsFeedbackAberto(false)}
+            />
+        </Card >
     )
 }
