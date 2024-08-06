@@ -1,6 +1,7 @@
 export interface ReduxApp {
    userData: ReduxUser,
    userToken: UserTokenInfo,
+   isLoggedIn: boolean,
    isLoading: boolean,
    error: boolean,
 };

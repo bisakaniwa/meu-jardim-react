@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, CardContent, CircularProgress, Grid, Typography } from '@mui/material'
+import { Avatar, Card, CardContent, Grid, Typography } from '@mui/material'
 import happySucculent from '../../styles/icons/happy-succulent.png'
 import { Link, useNavigate } from "react-router-dom";
 import { AuthProvider } from "../../service/auth/AuthProvider";
@@ -12,6 +12,7 @@ import { usePlantaContext } from '../../hooks/usePlantaContext';
 import { ModalAviso } from '../../components/ModalAviso';
 import { RootState } from '../../redux/configureStore';
 import { connect, ConnectedProps } from 'react-redux';
+import { Loading } from '../../components/Loading';
 
 const mapStateToProps = (state: RootState) => ({
     userId: state.user.userData.userId,
@@ -64,9 +65,7 @@ const Home = ({ displayName, userId }: CombinedProps) => {
     return (
         <div>
             {isLoading ?
-                <Box hidden={!isLoading} display="flex" justifyContent="center" pt="27%">
-                    <CircularProgress thickness={5} size={110} sx={{ color: "#9d3900" }} />
-                </Box>
+                <Loading isLoading={isLoading} />
                 : <Grid container direction="row">
                     <Grid item width="35%" mr="3%">
                         <Grid container direction="column" alignItems="center" whiteSpace="normal" pt="10%">

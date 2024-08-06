@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ProtectedRoute } from "./service/auth/protectedRoute";
-import { UserTokenInfo } from "./interfaces/ReduxInterfaces";
 import { Inicio } from "./pages/Inicio";
 import { HomePage } from "./pages/Home";
 import { Perfil } from "./pages/Perfil";
@@ -13,36 +12,18 @@ import { CadastrarPlantas } from "./pages/Plantas/CadastroPlantas";
 import { VerPlantas } from "./pages/Plantas/VerPlantas";
 import { EditarPlantas } from "./pages/Plantas/EditarPlantas";
 import { MinhaPlanta } from "./pages/Plantas/MinhaPlanta";
-import { getTokenData } from "./redux/configureStore";
+import { Loading } from "./components/Loading";
 
 export const AppRouter = () => {
-    // TODO: aprender a usar esta merda
-    // const tokenInfo: UserTokenInfo = useAppSelector<{app: ReduxApp}>((state: RootState) => {
-    //         return state?.app?.userToken
-    // })
-    
-    const isAuthenticated = async () => {
-        const tokenInfo: UserTokenInfo = await {
-            currentToken: getTokenData.currentToken,
-            expirationTime: getTokenData.expirationTime,
-            isExpired: getTokenData.isExpired,
-        };
-        if (tokenInfo?.currentToken && (tokenInfo?.currentToken !== "") && (tokenInfo?.currentToken !== undefined)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     const router = createBrowserRouter([
-        { path: "/", index: true, element: <Inicio /> },
+        { path: "/login", index: true, element: <Inicio /> },
         { path: '/cadastro', element: <CadastroFirebase /> },
         // { path: "/cadastro", Component: Cadastro },
         {
-            element: <ProtectedRoute isAuthenticated={isAuthenticated()} />,
+            element: <ProtectedRoute />,
             children: [
                 {
-                    path: "/home", element: <HomePage />
+                    path: "/", element: <HomePage />
                 },
                 {
                     path: "/perfil", children: [
@@ -95,6 +76,6 @@ export const AppRouter = () => {
     ], { basename: "/" });
 
     return (
-            <RouterProvider router={router} />
+        <RouterProvider router={router} fallbackElement={<Loading />} />
     )
 }

@@ -8,6 +8,7 @@ export const appInitialState: ReduxApp = {
       expirationTime: "",
       isExpired: false,
    } as UserTokenInfo,
+   isLoggedIn: false,
    isLoading: false,
    error: false,
 };
@@ -28,15 +29,19 @@ const userSlice = createSlice({
       saveUserToken: (state, action: PayloadAction<UserTokenInfo>) => {
          state.userToken = action.payload;
       },
+      changeLoginState: (state, action: PayloadAction<boolean>) => {
+         state.isLoggedIn = action.payload;
+      },
       clearOnLogout: (state, action: PayloadAction<ReduxApp>) => {
          state.userData = action.payload.userData;
          state.userToken = action.payload.userToken;
+         state.isLoggedIn = action.payload.isLoggedIn;
       },
    }
 })
 
 export const {
-   actionStarted, actionFinished, saveUserData, saveUserToken, clearOnLogout
+   actionStarted, actionFinished, saveUserData, saveUserToken, changeLoginState, clearOnLogout
 } = userSlice.actions;
 
 export default userSlice.reducer;

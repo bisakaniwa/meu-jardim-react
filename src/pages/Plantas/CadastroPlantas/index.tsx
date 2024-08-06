@@ -24,7 +24,7 @@ const CadastroPlantas = ({ userId }: CombinedProps) => {
     }
 
     const voltarHome = () => {
-        navigate("/home")
+        navigate("/")
     }
 
     return (

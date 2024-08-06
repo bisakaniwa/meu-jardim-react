@@ -3,10 +3,12 @@ import succulent from '../../../styles/icons/succulent.png'
 import { SubmitHandler, useForm } from "react-hook-form"
 import { LoginInterface } from "../../../interfaces/AuthInterface"
 import { useNavigate } from "react-router-dom"
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { AuthProvider } from "../../../service/auth/AuthProvider"
 import { EMAIL_PATTERN } from "../../../static/regexPatterns"
 import { ModalAviso } from "../../../components/ModalAviso"
+import { useUserDispatch, useUserSelector } from "../../../redux/configureStore"
+import { appInitialState, clearOnLogout } from "../../../redux/user"
 
 export const CadastroFirebase = () => {
     const { register, handleSubmit, formState } = useForm<LoginInterface>({ reValidateMode: "onSubmit" });
@@ -17,6 +19,15 @@ export const CadastroFirebase = () => {
     const [senhasDiferentes, setSenhasDiferentes] = useState<boolean>(false);
     const [isModalAberto, setIsModalAberto] = useState<boolean>(false);
     const [mensagemModal, setMensagemModal] = useState<string>("");
+    const userToken = useUserSelector(state => state.user.userToken.currentToken);
+    const dispatch = useUserDispatch();
+
+    useEffect(() => {
+        if (userToken && (userToken !== ("" && undefined))) {
+            alert("Você está prestes a sair da sua conta.");
+            dispatch(clearOnLogout(appInitialState));
+        }
+    }, [])
 
     const funcaoCadastrar: SubmitHandler<LoginInterface> = async (data: LoginInterface) => {
         if (data.password === confirmaSenha) {
@@ -39,7 +50,7 @@ export const CadastroFirebase = () => {
     }
 
     const funcaoVoltar = () => {
-        navigate("/")
+        navigate("/login")
     }
 
     const campoConfirmaSenha = (event: ChangeEvent<HTMLInputElement>) => {
@@ -157,7 +168,7 @@ export const CadastroFirebase = () => {
                 handleFechar={() => setIsModalAberto(false)}
                 textoPrincipal={mensagemModal}
                 textoBotao="Ok"
-                acaoBotao={() => navigate("/home")}
+                acaoBotao={() => navigate("/")}
             />
         </Box>
     )

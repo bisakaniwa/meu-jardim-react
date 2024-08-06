@@ -2,12 +2,14 @@ import { Button, Card, CardContent, Dialog, DialogContent, DialogTitle, Grid, Ic
 import { SubmitHandler, useForm } from "react-hook-form";
 import { LoginInterface } from "../../interfaces/AuthInterface";
 import { AuthProvider } from "../../service/auth/AuthProvider";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import GoogleIcon from '@mui/icons-material/Google';
 import './index.css';
 import { useNavigate } from "react-router-dom";
 import { EMAIL_PATTERN } from "../../static/regexPatterns";
 import { ModalAviso } from "../ModalAviso";
+import { useUserDispatch, useUserSelector } from "../../redux/configureStore";
+import { appInitialState, clearOnLogout } from "../../redux/user";
 
 export const LoginFirebase = () => {
     const { register, handleSubmit, formState } = useForm<LoginInterface>({ reValidateMode: "onSubmit" });
@@ -18,6 +20,15 @@ export const LoginFirebase = () => {
     const [isFeedbackAberto, setIsFeedbackAberto] = useState<boolean>(false);
     const [mensagemModal, setMensagemModal] = useState<string>("");
     const navigate = useNavigate();
+    const userToken = useUserSelector(state => state.user.userToken.currentToken);
+    const dispatch = useUserDispatch();
+
+    useEffect(() => {
+        if (userToken && userToken !== ("" && undefined)) {
+            alert("Você está prestes a sair da sua conta.");
+            dispatch(clearOnLogout(appInitialState));
+        }
+    }, [])
 
     const login: SubmitHandler<LoginInterface> = async (data: LoginInterface) => {
         await loginEmailSenha(data.email, data.password);

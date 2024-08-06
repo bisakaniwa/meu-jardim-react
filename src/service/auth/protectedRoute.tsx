@@ -1,18 +1,17 @@
-import { CircularProgress } from "@mui/material";
 import { Suspense } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useUserSelector } from "../../redux/configureStore";
+import { Loading } from "../../components/Loading";
 
-type ProtectedRouteProps = {
-    isAuthenticated: Promise<boolean>,
-};
+export const ProtectedRoute = () => {
+    const userToken = useUserSelector(state => state.user.userToken.currentToken);
 
-export const ProtectedRoute = ({ isAuthenticated }: ProtectedRouteProps) => {
-    if (!isAuthenticated) {
+    if (!userToken || (userToken === ("" ?? undefined))) {
         alert("Você não está logado!");
-        return <Navigate to="/" replace />
+        return <Navigate to="/login" replace />
     } else {
         return (
-            <Suspense fallback={<CircularProgress sx={{ color: "#9d3900" }} />}>
+            <Suspense fallback={<Loading />}>
                 <Outlet />
             </Suspense>
         )

@@ -2,7 +2,7 @@ import { GoogleAuthProvider, User, UserCredential, createUserWithEmailAndPasswor
 import { firebaseAuth } from '../../config/firebase-config'
 import { FirebaseError } from 'firebase/app';
 import { useUserDispatch } from '../../redux/configureStore';
-import { appInitialState, clearOnLogout, saveUserData, saveUserToken } from '../../redux/user';
+import { appInitialState, changeLoginState, clearOnLogout, saveUserData, saveUserToken } from '../../redux/user';
 import { useNavigate } from 'react-router-dom';
 
 export const AuthProvider = () => {
@@ -30,13 +30,14 @@ export const AuthProvider = () => {
             };
             dispatch(saveUserData(customUser));
             dispatch(saveUserToken(customTokenInfo));
+            dispatch(changeLoginState(true));
         }
     }
 
     const cadastrar = async (email: string, password: string) => {
         await createUserWithEmailAndPassword(firebaseAuth, email, password)
             .then(async (resposta: UserCredential) => {
-                return await onAuthSuccess(resposta.user).then(() => navigate("/home"));
+                return await onAuthSuccess(resposta.user).then(() => navigate("/"));
             })
             .catch((error: FirebaseError) => {
                 return { error }
@@ -46,7 +47,7 @@ export const AuthProvider = () => {
     const loginEmailSenha = async (email: string, password: string) => {
         await signInWithEmailAndPassword(firebaseAuth, email, password)
             .then(async (resposta: UserCredential) => {
-                return await onAuthSuccess(resposta.user).then(() => navigate("/home"));
+                return await onAuthSuccess(resposta.user).then(() => navigate("/"));
             })
             .catch((error: FirebaseError) => {
                 if (error.code === "auth/invalid-email" || error.code === "auth/wrong-password") {
@@ -83,7 +84,7 @@ export const AuthProvider = () => {
     const loginGoogle = async () => {
         await signInWithPopup(firebaseAuth, googleProvider)
             .then(async (resposta: UserCredential) => {
-                return await onAuthSuccess(resposta.user).then(() => navigate("/home"));
+                return await onAuthSuccess(resposta.user).then(() => navigate("/"));
             })
             .catch((error: FirebaseError) => {
                 alert("Erro ao autenticar usando o Google");
@@ -94,7 +95,7 @@ export const AuthProvider = () => {
     const sair = async () => {
         await signOut(firebaseAuth).then(() => {
             dispatch(clearOnLogout(appInitialState));
-            navigate("/");
+            navigate("/login");
         }).catch((error) => {
             console.log(error);
             return { error };

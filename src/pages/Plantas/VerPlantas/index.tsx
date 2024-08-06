@@ -33,7 +33,7 @@ const CarregarPlantas = ({ userId }: CombinedProps) => {
     const buscaPlantas = useCallback(verPlantas, []);
 
     const handleVoltar = () => {
-        navigate("/home");
+        navigate("/");
     };
 
     const handleAbrir = (planta: Planta) => {

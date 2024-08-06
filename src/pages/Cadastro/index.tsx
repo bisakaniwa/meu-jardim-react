@@ -30,7 +30,7 @@ export const Cadastro = () => {
     }
 
     const voltarHome = () => {
-        navigate("/");
+        navigate("/login");
     }
 
     return (

@@ -18,7 +18,7 @@ const VerPerfil = ({ user }: CombinedProps) => {
     const navigate = useNavigate();
 
     const handleVoltar = () => {
-        navigate("/home");
+        navigate("/");
     }
 
     const handleEditar = () => {

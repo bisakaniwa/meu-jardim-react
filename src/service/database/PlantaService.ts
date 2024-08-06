@@ -23,7 +23,7 @@ export const PlantaService = () => {
             descricao: planta.descricao,
 
         })
-            .then(() => navigate("/home"))
+            .then(() => navigate("/"))
             .catch((error) => console.log(error))
     }
 

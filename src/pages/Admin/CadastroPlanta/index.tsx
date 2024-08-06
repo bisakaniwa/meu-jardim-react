@@ -16,14 +16,14 @@ export const CadastroPlanta = () => {
         if (user.isAdmin === true) {
             cadastrarPlanta(data, user.userId);
 
-            navigate("/home")
+            navigate("/")
         } else {
             alert("Você não pode cadastrar uma planta pois não é um administrador!");
         }
     }
 
     const cancelaCadastro = () => {
-        navigate("/home")
+        navigate("/")
     }
 
     return (

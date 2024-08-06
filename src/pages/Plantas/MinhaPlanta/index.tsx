@@ -71,6 +71,7 @@ const VerMinhaPlanta = ({ userId }: CombinedProps) => {
     // TODO: possibilitar legenda nas fotos
     // TODO: possibilitar cadastro de plantas individuais
     // TODO: nas páginas individuais de cada planta, incluir frequência de rega, adubação, etc
+    // TODO: melhorar carregamento da foto + auto reload da página
 
     return (
         <Card raised sx={{ width: "85%", ml: "7%", mt: "5%", mb: "5%" }}>
@@ -127,7 +128,8 @@ const VerMinhaPlanta = ({ userId }: CombinedProps) => {
                                     <CardContent>
                                         <Grid container direction="column">
                                             <Grid item>
-                                                <img src={foto} width="250vw" height="250vh" />
+                                                {/*TODO: adicionar dimensões personalizadas e data da foto*/}
+                                                <img src={foto} width="250vw" height="340vh" />
                                             </Grid>
 
                                             {/* <Grid container direction="row" justifyContent="end">
