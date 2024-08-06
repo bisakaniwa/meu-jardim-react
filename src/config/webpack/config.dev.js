@@ -22,6 +22,22 @@ const devConfig = {
       },
       liveReload: false,
    },
+   module: {
+      rules: [
+         {
+            test: /\.(png|jpg|svg)$/,
+            type: 'asset',
+            parser: {
+               dataUrlCondition: {
+                  maxSize: 10 * 1024,
+               },
+            },
+            generator: {
+               filename: './images/[name].[ext]',
+            },
+         }
+      ]
+   }
 };
 
 module.exports = merge(config, devConfig);
